@@ -1,0 +1,56 @@
+module cache_controller (clk, rst_n, i_mem_en, d_mem_en, i_miss_detected, d_miss_detected, d_mem_wr, i_address, d_address, d_data_in, mem_out, i_filling_cache, d_filling_cache, i_mem_data_valid, d_mem_data_valid);
+
+localparam IDLE = 2'b00;
+localparam DATA = 2'b01;
+localparam INST = 2'b10;
+localparam WRBK = 2'b11;
+
+
+input clk, rst_n;
+//input from caches
+input i_mem_en, d_mem_en, d_mem_wr, d_miss_detected, i_miss_detected, i_filling_cache, d_filling_cache;
+input [15:0] i_address, d_address, d_data_in;	//output from cache
+//output to caches
+output [15:0] mem_out;
+output i_mem_data_valid, d_mem_data_valid;
+//output to handle conflict
+//set i_mem invalid
+
+wire mem_en, mem_data_valid;
+wire [15:0] mem_out, mem_in, mem_addr;
+wire [1:0] state, next_state, fromIDLE, fromDATA, fromINST, fromWRBK;
+//wire mem_sel;
+//reg [1:0] state, next_state;
+//assign mem_sel = d_mem_en;  //1-d_mem, 0-i_mem
+assign mem_en = /*~(state == IDLE) & ~(next_state == IDLE);/*/d_mem_en | i_mem_en;
+
+dff ff0(.q(state[0]), .d(next_state[0]), .wen(1'b1), .clk(clk), .rst(~rst_n));
+dff ff1(.q(state[1]), .d(next_state[1]), .wen(1'b1), .clk(clk), .rst(~rst_n));
+
+assign next_state = (state == IDLE) ? (fromIDLE) :
+			(state == DATA) ? (fromDATA) :
+			(state == INST) ? (fromINST) :
+			//(state == WRBK) ? (fromWRBK) :
+			IDLE;
+
+assign fromIDLE = (d_miss_detected) ? DATA :
+			(i_miss_detected) ? INST :
+			(~i_miss_detected & ~d_miss_detected) ? IDLE : IDLE;
+			//(~d_mem_wr) ? WRBK : IDLE;
+
+assign fromDATA = (d_filling_cache | d_miss_detected) ? DATA :IDLE;
+
+assign fromINST = (i_filling_cache | i_miss_detected) ? INST : IDLE;
+
+assign mem_addr = (state == IDLE & d_mem_wr) ? d_address : 
+		  (state == DATA) ? d_address : 
+		  (state == INST) ? i_address : (i_miss_detected) ? i_address : (d_miss_detected) ? d_address << 1: 16'h0000 ;
+
+
+memory4c memory(.data_out(mem_out), .data_in(d_data_in), .addr(mem_addr), .enable(mem_en), 
+	.wr(d_mem_wr & ~d_miss_detected & d_mem_en & ~d_filling_cache & ~i_filling_cache), .clk(clk), .rst(~rst_n), .data_valid(mem_data_valid));
+
+assign i_mem_data_valid = mem_en & (state == INST) & mem_data_valid;
+assign d_mem_data_valid = mem_en & (state == DATA)  & mem_data_valid;
+
+endmodule
