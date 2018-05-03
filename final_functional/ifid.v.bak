@@ -17,7 +17,7 @@ register_16b pc_reg(.clk(clk), .rst(rst |flush ), .write_en(write), .data_in(pc)
 register_16b inst_reg(.clk(clk), .rst(rst |flush), .write_en(write), .data_in(inst_data), .data_out(inst_data_pl));
 
 dff flushff(.q(ifid_flush), .d(flush), .wen(write), .clk(clk), .rst(rst));
-dff stallff(.q(stall_out), .d(stall_in), .wen(write), .clk(clk), .rst(rst));
+dff stallff(.q(stall_out), .d(stall_in), .wen(1'b1), .clk(clk), .rst(rst));
 
 endmodule
 

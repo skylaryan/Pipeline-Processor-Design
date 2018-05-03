@@ -206,7 +206,7 @@ module cpu_ptb();
    assign ICacheHit = ~DUT.instruction_cache.miss_detected & DUT.miss & (DUT.ifid_pipe.inst_data_pl[15:12] != 4'hF);//DUT.instruction_cache.mem_data_valid;
    // Signal indicating a valid instruction cache hit
 
-   assign DCacheReq = DCacheHit | (DUT.data_cache.miss_detected & ~DUT.instruction_cache.filling_cache & ~DUT.data_cache.filling_cache);//(DUT.controller.d_filling_cache & DUT.controller.d_mem_data_valid & DUT.data_cache.cache_wr & ~DUT.data_cache.fsm.fsm_busy) | (DCacheHit);
+   assign DCacheReq = DCacheHit | (DUT.data_cache.miss_detected & ~DUT.instruction_cache.filling_cache & ~DUT.data_cache.filling_cache));//(DUT.controller.d_filling_cache & DUT.controller.d_mem_data_valid & DUT.data_cache.cache_wr & ~DUT.data_cache.fsm.fsm_busy) | (DCacheHit);
    //(DUT.data_cache.mem_data_valid | DUT.d_mem_wr) & ~DUT.data_cache.fsm.fsm_busy;
    // Signal indicating a valid instruction data read or write request to cache
    

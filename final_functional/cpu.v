@@ -22,7 +22,7 @@ module cpu(input clk, rst_n, output hlt, output [15:0] pc_out);
 	//CACHE SIGNALS
 	wire [15:0] i_memory_address, i_data_in, d_data_in, d_memory_address;	// change this back to mem_data
 	wire i_mem_enable, i_mem_data_valid, i_filling_cache, i_miss_detected, cache_mem_write, d_mem_data_valid, d_mem_wr, d_mem_enable, d_filling_cache, d_miss_detected ;	// change this back to mem_enable
-	
+
 	assign Write_PC_reg = ~stall & ~i_filling_cache & ~d_filling_cache & ~i_miss_detected & ~d_miss_detected;
 	Register program_counter(.clk(clk), .rst(~rst_n), .D(updated_PC), .WriteReg(Write_PC_reg),
 				 .ReadEnable1(1'b1), .ReadEnable2(), .Bitline1(read_PC), .Bitline2());
@@ -111,11 +111,31 @@ module cpu(input clk, rst_n, output hlt, output [15:0] pc_out);
 	assign miss_or_stall = (i_miss_detected | d_miss_detected | i_filling_cache | d_filling_cache) ? 0 : (stall) ? 0 : 1;
 	assign miss = ~(i_miss_detected | d_miss_detected | i_filling_cache | d_filling_cache);
 	
-	wire stall_ifid_reset;
+	wire stall_ifid_reset, ifid_stall_pl;
 	dff stall_reset(.clk(clk), .rst(~rst_n), .d(stall_in & ~(i_filling_cache | i_miss_detected)), .q(stall_ifid_reset), .wen(1'b1));
+	//was here
+
+	// flip flop chain
+	//dff stall_link1(.clk(clk), .rst(~rst_n), .d(stall), .q(stall_1), .wen(1'b1));
+	//dff stall_link2(.clk(clk), .rst(~rst_n), .d(stall_1), .q(stall_2), .wen(1'b1));
+	///dff stall_link3(.clk(clk), .rst(~rst_n), .d(stall_2), .q(stall_3), .wen(1'b1));
+	//dff stall_link4(.clk(clk), .rst(~rst_n), .d(stall_3), .q(stall_4), .wen(1'b1));
 	
-	ifid ifid_pipe(.clk(clk), .flush(flush_in), .rst(~rst_n | stall_ifid_reset), .write(miss_or_stall), .ifid_nvz(ifid_nvz), .inst_data(inst_data), .pc(updated_PC), 
-		.inst_data_pl(ifid_inst_data), .pc_pl(ifid_pc), .ifid_flush(ifid_flush));
+
+
+
+
+	//////////////////////////////////// DEBUGGING
+	//assign cache_mem_write = stall_4; // CHANGE THIS ONLY USED FOR DEBUGGING
+	//////////////////////////////////// NOT PERMANENT !!!!!!!!!!!
+
+
+
+
+
+
+	ifid ifid_pipe(.clk(clk), .flush(flush_in), .rst(~rst_n), .write(miss_or_stall), .ifid_nvz(ifid_nvz), .inst_data(inst_data), .pc(updated_PC), .stall_in(stall | ~rst_n | stall_ifid_reset),  
+		.inst_data_pl(ifid_inst_data), .pc_pl(ifid_pc), .ifid_flush(ifid_flush), .stall_out(ifid_stall_pl));
 	
 	//wire stall_intermediate;
 	//assign stall_intermediate = (i_filling_cache | d_filling_cache) ? (0) : (stall_in);
@@ -143,8 +163,9 @@ module cpu(input clk, rst_n, output hlt, output [15:0] pc_out);
 	
 	assign SrcData1_fwd = ((memwb_reg_write_en) & (memwb_rd != 0) & (memwb_rd == ifid_rs)) ? DstData : SrcData1;
 	assign SrcData2_fwd = ((memwb_reg_write_en) & (memwb_rd != 0) & (memwb_rd == ifid_rt)) ? DstData : SrcData2;
-
-	idex idex_pipe(.clk(clk), .rst(~rst_n), .flush(flush_in), .write(miss), .idex_nvz(idex_nvz), .inst_data(ifid_inst_data), .pc(ifid_pc), .SrcData1(SrcData1_fwd), .SrcData2(SrcData2_fwd), .stall_in(stall | ~rst_n), .ifid_flush(ifid_flush),
+						
+					// | stall_ifid_reset																					//stall | ~rst_n | stall_ifid_reset //~rst_n |ifid_stall_pl
+	idex idex_pipe(.clk(clk), .rst(~rst_n), .stall_reset(stall_ifid_reset), .flush(flush_in), .write(miss), .idex_nvz(idex_nvz), .inst_data(ifid_inst_data), .pc(ifid_pc), .SrcData1(SrcData1_fwd), .SrcData2(SrcData2_fwd), .stall_in(stall | ~rst_n | stall_ifid_reset ), .ifid_flush(ifid_flush),
 		.stall_out(idex_stall), .inst_data_pl(idex_inst_data), .pc_pl(idex_pc), .SrcData1_pl(idex_SrcData1), .SrcData2_pl(idex_SrcData2), .flush_out(idex_flush), .flush_out2(piped_ifid_flush));
 
 
@@ -167,12 +188,15 @@ module cpu(input clk, rst_n, output hlt, output [15:0] pc_out);
 	// forwardA = 10 - from prior alu (ex->ex)
 	// forwardA = 01 - from memwb
 	//assign alu_in1 = (forwardA == 2'b10) ? alu_out_p3 : ((forwardA == 2'b01) ?  DstData : default_alu_in1);
-	assign alu_in1 = (~flush_in) ? ((forwardA == 2'b10) ? alu_out_p3 : ((forwardA == 2'b01) ?  DstData : default_alu_in1)) : default_alu_in1;
+	wire [15:0] forwardA_data;
+	assign forwardA_data = (exmem_opcode == 4'b1000) ? mem_data : alu_out_p3;
+	assign alu_in1 = (~flush_in) ? ((forwardA == 2'b10) ? forwardA_data : ((forwardA == 2'b01) ?  DstData : default_alu_in1)) : default_alu_in1;
 	// forwardB = 00
 	// forwardB = 10
 	// forwardB = 01
 	 // changed alu_out_4 to DstData because it needs to take the mem of the reg if load is selected
 	//assign alu_in2 = (forwardB == 2'b10) ? alu_out_p3 : ((forwardB == 2'b01) ?  DstData : idex_SrcData2);	//Maybe DstData <- alu_out_p4
+
 	assign alu_in2 = (~flush_in) ? ((forwardB == 2'b10) ? alu_out_p3 : ((forwardB == 2'b01) ?  DstData : idex_SrcData2)) : idex_SrcData2;
 
 	ALU alu(.opcode(idex_opcode), .offset(idex_u[3:0]), .u(idex_u), .alu_in1(alu_in1), .alu_in2(alu_in2), .alu_out(alu_out),
@@ -186,7 +210,7 @@ module cpu(input clk, rst_n, output hlt, output [15:0] pc_out);
 		 .PC_out(calcPC), .flush(flush_in));
 	
 	wire [15:0] exmem_SrcData_in;
-	assign exmem_SrcData_in = (idex_inst_data[15] & forwardB == 2'b01) ? alu_in2 : idex_SrcData2;
+	assign exmem_SrcData_in = (idex_inst_data[15:14] == 2'b10 & forwardB == 2'b01) ? alu_in2 : idex_SrcData2;
 
 	// EX/MEM PIPE 3
 	wire exmem_stall;
@@ -206,7 +230,7 @@ module cpu(input clk, rst_n, output hlt, output [15:0] pc_out);
 	memwb memwb_pipe(.clk(clk), .rst(~rst_n), .flush(exmem_flush), .write(miss), .nvz(exmem_nvz), .inst_data(exmem_inst_data), .mem_out(mem_data), .alu_out(alu_out_p3), .exmemPC(exmemPC), .stall_in(exmem_stall | ~rst_n),
 		.stall_out(memwb_stall), .nvz_pl(memwb_nvz), .inst_data_pl(memwb_inst_data), .mem_out_pl(mem_out_p4), .alu_out_pl(alu_out_p4), .memwbPC(memwbPC), .flush_out(memwb_flush));
 	assign reg_write_en = (~memwb_stall) ? (((memwb_opcode[3] == 1'b0) | (memwb_opcode[3:1] == 3'b101) | (memwb_opcode == 4'b1110)) ? (1) : ((memwb_opcode == 4'b1000) ? (1) : (0))) : 0;
-
+	//assign memwb_stall = stall_4;
 	assign final_enable = (init_enable) ? ((memwb_flush | delayed_memwb_flush) ? 0 : reg_write_en) : 0;
 
 	
@@ -214,7 +238,6 @@ module cpu(input clk, rst_n, output hlt, output [15:0] pc_out);
 	assign hlt = (memwb_opcode == 4'b1111) ? 1 : 0 ;	//opcode == 1111
 
 endmodule
-
 
 
 

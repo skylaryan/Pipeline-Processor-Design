@@ -1,7 +1,6 @@
 module idex(input clk, rst, stall_reset, flush, write, stall_in, ifid_flush, input[2:0] idex_nvz, input [15:0] inst_data, pc, SrcData1, SrcData2, output stall_out, flush_out, flush_out2, output [15:0] inst_data_pl, pc_pl, SrcData1_pl, SrcData2_pl);
 
-wire reset;
-assign reset = rst | stall_reset;
+reset = rst | stall_reset;
 
 register_16b inst_reg(.clk(clk), .rst(reset|flush), .write_en(write), .data_in(inst_data), .data_out(inst_data_pl));
 register_16b SrcData1_reg(.clk(clk), .rst(reset), .write_en(write), .data_in(SrcData1), .data_out(SrcData1_pl));

@@ -35,7 +35,7 @@ assign valid_tag = {3'b100, address[15:11]}; // ? is there ever a time when the 
 MetaDataArray cache_meta(.clk(clk), .rst(~rst_n), .DataIn(valid_tag), .Write(write_tag_array), .BlockEnable(BlockEnable), .DataOut(meta_out));
 
 // miss detected when the valid bit isn't set or tag bits don't match those for the decoded cache block and word
-assign miss_detected = (~filling_cache) ? ~meta_out[7] | ~(address[15:11] == meta_out[4:0]) : 1'b0;
+assign miss_detected = ~meta_out[7] | ~(address[15:11] == meta_out[4:0]);
 
 assign mem_enable = 1'b1;
 endmodule
