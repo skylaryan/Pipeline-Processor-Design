@@ -1,0 +1,683 @@
+/////////////////////////////////////////////////////////////
+// Created by: Synopsys Design Compiler(R)
+// Version   : M-2016.12
+// Date      : Thu May  3 23:01:47 2018
+/////////////////////////////////////////////////////////////
+
+
+module cpu ( clk, rst_n, hlt, pc_out );
+  output [15:0] pc_out;
+  input clk, rst_n;
+  output hlt;
+  wire   flush_in, i_filling_cache, d_filling_cache, i_miss_detected,
+         d_miss_detected, valid, init_enable, flush, cache_mem_valid, _4_net_,
+         finished, rst_flag, \idex_rd[0] , exmem_reg_write_en,
+         memwb_reg_write_en, stall_in, miss_or_stall, _11_net_,
+         stall_ifid_reset, ifid_flush, final_enable, _17_net_, idex_stall,
+         idex_flush, setZ, write_flag_en, setV, setN, _22_net_, exmem_stall,
+         exmem_flush, _24_net_, memwb_stall, memwb_flush, delayed_memwb_flush,
+         _25_net_, n17, n18, n19, n20, n21, n22, n23, n24, n25, n26, n27, n28,
+         n29, n30, n31, n32, n90, n91, n92, n93, n94, n95, n96, n97, n98, n99,
+         n100, n101, n102, n104, n105, n106, n107, n108, n109, n110, n111,
+         n112, n113, n114, n115, n116, n117, n118, n119, n120, n121, n122,
+         n123, n124, n125, n126, n127, n128, n129, n130, n131, n132, n133,
+         n134, n135, n136, n137, n138, n139, n140, n141, n142, n143, n144,
+         n145, n146, n147, n148, n149, n150, n151, n152, n153, n154, n155,
+         n156, n157, n158, n159, n160, n161, n162, n163, n164, n165, n166,
+         n167, n168, n169, n170, n171, n172, n173, n174, n175, n176, n177,
+         n178, n179, n180, n181, n182, n183, n184, n185, n186, n187, n188,
+         n189, n190, n191, n192, n193, n194, n195, n196, n197, n198, n199,
+         n200, n201, n202, n203, n204, n205, n206, n207, n208, n209, n210,
+         n211, n212, n213, n214, n215, n216, n217, n218, n219, n220, n221,
+         n222, n223, n224, n225, n226, n227, n228, n229, n230, n231, n232,
+         n233;
+  wire   [15:0] updated_PC;
+  wire   [15:0] defaultPC;
+  wire   [15:0] inst_data;
+  wire   [15:0] calcPC;
+  wire   [15:0] mem_out;
+  wire   [15:0] i_memory_address;
+  wire   [15:0] d_data_in;
+  wire   [15:0] alu_out_p3;
+  wire   [15:0] d_memory_address;
+  wire   [15:0] mem_data;
+  wire   [15:0] ifid_inst_data;
+  wire   [3:0] ifid_rd;
+  wire   [3:0] ifid_rs;
+  wire   [3:0] ifid_rt;
+  wire   [3:0] ifid_opcode;
+  wire   [15:0] idex_inst_data;
+  wire   [3:0] idex_rs;
+  wire   [3:0] idex_rt;
+  wire   [7:0] idex_u;
+  wire   [3:0] idex_opcode;
+  wire   [2:0] idex_cond;
+  wire   [2:0] idex_cyclops;
+  wire   [15:0] exmem_inst_data;
+  wire   [3:0] exmem_rd;
+  wire   [3:0] exmem_opcode;
+  wire   [15:0] memwb_inst_data;
+  wire   [3:0] memwb_rd;
+  wire   [3:0] memwb_rt;
+  wire   [3:0] memwb_opcode;
+  wire   [2:0] ifid_nvz;
+  wire   [15:0] ifid_pc;
+  wire   [3:0] DstReg;
+  wire   [3:0] SrcReg2;
+  wire   [15:0] mem_out_p4;
+  wire   [15:0] alu_out_p4;
+  wire   [15:0] SrcData1;
+  wire   [15:0] SrcData2;
+  wire   [15:0] SrcData1_fwd;
+  wire   [15:0] SrcData2_fwd;
+  wire   [2:0] idex_nvz;
+  wire   [15:0] idex_pc;
+  wire   [15:0] idex_SrcData1;
+  wire   [15:0] idex_SrcData2;
+  wire   [2:0] read_flag;
+  wire   [1:0] forwardA;
+  wire   [1:0] forwardB;
+  wire   [15:0] alu_in1;
+  wire   [15:0] alu_in2;
+  wire   [15:0] alu_out;
+  wire   [15:0] test;
+  wire   [15:0] exmemPC;
+  wire   [15:0] exmem_SrcData_in;
+  wire   [2:0] exmem_nvz;
+  wire   [15:1] \add_35/carry ;
+  wire   SYNOPSYS_UNCONNECTED__0, SYNOPSYS_UNCONNECTED__1, 
+        SYNOPSYS_UNCONNECTED__2, SYNOPSYS_UNCONNECTED__3;
+  assign pc_out[0] = defaultPC[0];
+  assign pc_out[1] = \add_35/carry  [2];
+
+  AO222D1BWP U6 ( .A1(calcPC[9]), .A2(n91), .B1(defaultPC[9]), .B2(n92), .C1(
+        pc_out[9]), .C2(n93), .Z(updated_PC[9]) );
+  AO222D1BWP U7 ( .A1(calcPC[8]), .A2(n91), .B1(defaultPC[8]), .B2(n92), .C1(
+        pc_out[8]), .C2(n93), .Z(updated_PC[8]) );
+  AO222D1BWP U9 ( .A1(calcPC[7]), .A2(n91), .B1(defaultPC[7]), .B2(n92), .C1(
+        pc_out[7]), .C2(n93), .Z(updated_PC[7]) );
+  AO222D1BWP U10 ( .A1(calcPC[6]), .A2(n91), .B1(defaultPC[6]), .B2(n92), .C1(
+        pc_out[6]), .C2(n93), .Z(updated_PC[6]) );
+  AO222D1BWP U11 ( .A1(calcPC[5]), .A2(n91), .B1(defaultPC[5]), .B2(n92), .C1(
+        pc_out[5]), .C2(n93), .Z(updated_PC[5]) );
+  AO222D1BWP U12 ( .A1(calcPC[4]), .A2(n91), .B1(defaultPC[4]), .B2(n92), .C1(
+        pc_out[4]), .C2(n93), .Z(updated_PC[4]) );
+  AO222D1BWP U13 ( .A1(calcPC[3]), .A2(n91), .B1(defaultPC[3]), .B2(n92), .C1(
+        pc_out[3]), .C2(n93), .Z(updated_PC[3]) );
+  AO222D1BWP U14 ( .A1(calcPC[2]), .A2(n91), .B1(defaultPC[2]), .B2(n92), .C1(
+        pc_out[2]), .C2(n93), .Z(updated_PC[2]) );
+  AO222D1BWP U15 ( .A1(calcPC[1]), .A2(n91), .B1(defaultPC[1]), .B2(n92), .C1(
+        \add_35/carry [2]), .C2(n93), .Z(updated_PC[1]) );
+  AO222D1BWP U16 ( .A1(calcPC[15]), .A2(n91), .B1(defaultPC[15]), .B2(n92), 
+        .C1(pc_out[15]), .C2(n93), .Z(updated_PC[15]) );
+  AO222D1BWP U17 ( .A1(calcPC[14]), .A2(n91), .B1(defaultPC[14]), .B2(n92), 
+        .C1(pc_out[14]), .C2(n93), .Z(updated_PC[14]) );
+  AO222D1BWP U18 ( .A1(calcPC[13]), .A2(n91), .B1(defaultPC[13]), .B2(n92), 
+        .C1(pc_out[13]), .C2(n93), .Z(updated_PC[13]) );
+  AO222D1BWP U19 ( .A1(calcPC[12]), .A2(n91), .B1(defaultPC[12]), .B2(n92), 
+        .C1(pc_out[12]), .C2(n93), .Z(updated_PC[12]) );
+  AO222D1BWP U20 ( .A1(calcPC[11]), .A2(n91), .B1(defaultPC[11]), .B2(n92), 
+        .C1(pc_out[11]), .C2(n93), .Z(updated_PC[11]) );
+  AO222D1BWP U21 ( .A1(calcPC[10]), .A2(n91), .B1(defaultPC[10]), .B2(n92), 
+        .C1(pc_out[10]), .C2(n93), .Z(updated_PC[10]) );
+  AO222D1BWP U22 ( .A1(calcPC[0]), .A2(n91), .B1(defaultPC[0]), .B2(n92), .C1(
+        defaultPC[0]), .C2(n93), .Z(updated_PC[0]) );
+  INR2XD1BWP U23 ( .A1(n94), .B1(n93), .ZN(n92) );
+  OAI22D2BWP U24 ( .A1(valid), .A2(n233), .B1(flush_in), .B2(n174), .ZN(n94)
+         );
+  NR2XD1BWP U25 ( .A1(n170), .A2(n174), .ZN(n91) );
+  MOAI22D1BWP U26 ( .A1(n95), .A2(n204), .B1(exmemPC[9]), .B2(n95), .ZN(
+        test[9]) );
+  MOAI22D1BWP U27 ( .A1(n95), .A2(n203), .B1(exmemPC[8]), .B2(n95), .ZN(
+        test[8]) );
+  MOAI22D1BWP U28 ( .A1(n95), .A2(n202), .B1(exmemPC[7]), .B2(n95), .ZN(
+        test[7]) );
+  MOAI22D1BWP U29 ( .A1(n95), .A2(n201), .B1(exmemPC[6]), .B2(n95), .ZN(
+        test[6]) );
+  MOAI22D1BWP U30 ( .A1(n95), .A2(n200), .B1(exmemPC[5]), .B2(n95), .ZN(
+        test[5]) );
+  MOAI22D1BWP U31 ( .A1(n95), .A2(n199), .B1(exmemPC[4]), .B2(n95), .ZN(
+        test[4]) );
+  MOAI22D1BWP U32 ( .A1(n95), .A2(n198), .B1(exmemPC[3]), .B2(n95), .ZN(
+        test[3]) );
+  MOAI22D1BWP U33 ( .A1(n95), .A2(n197), .B1(exmemPC[2]), .B2(n95), .ZN(
+        test[2]) );
+  MOAI22D1BWP U34 ( .A1(n95), .A2(n196), .B1(exmemPC[1]), .B2(n95), .ZN(
+        test[1]) );
+  MOAI22D1BWP U35 ( .A1(n95), .A2(n210), .B1(exmemPC[15]), .B2(n95), .ZN(
+        test[15]) );
+  MOAI22D1BWP U36 ( .A1(n95), .A2(n209), .B1(exmemPC[14]), .B2(n95), .ZN(
+        test[14]) );
+  MOAI22D1BWP U37 ( .A1(n95), .A2(n208), .B1(exmemPC[13]), .B2(n95), .ZN(
+        test[13]) );
+  MOAI22D1BWP U38 ( .A1(n95), .A2(n207), .B1(exmemPC[12]), .B2(n95), .ZN(
+        test[12]) );
+  MOAI22D1BWP U39 ( .A1(n95), .A2(n206), .B1(exmemPC[11]), .B2(n95), .ZN(
+        test[11]) );
+  MOAI22D1BWP U40 ( .A1(n95), .A2(n205), .B1(exmemPC[10]), .B2(n95), .ZN(
+        test[10]) );
+  MOAI22D1BWP U41 ( .A1(n95), .A2(n195), .B1(exmemPC[0]), .B2(n95), .ZN(
+        test[0]) );
+  NR2XD1BWP U42 ( .A1(n96), .A2(idex_opcode[1]), .ZN(n95) );
+  INR2XD1BWP U43 ( .A1(exmem_opcode[0]), .B1(n97), .ZN(n169) );
+  AN4XD1BWP U44 ( .A1(memwb_opcode[0]), .A2(memwb_opcode[1]), .A3(
+        memwb_opcode[2]), .A4(memwb_opcode[3]), .Z(hlt) );
+  NR4D1BWP U45 ( .A1(n98), .A2(delayed_memwb_flush), .A3(memwb_stall), .A4(
+        memwb_flush), .ZN(final_enable) );
+  OAI31D2BWP U46 ( .A1(n232), .A2(n99), .A3(n100), .B(init_enable), .ZN(n98)
+         );
+  NR2XD1BWP U47 ( .A1(memwb_opcode[0]), .A2(n231), .ZN(n100) );
+  AOI21D2BWP U48 ( .A1(memwb_opcode[0]), .A2(n231), .B(memwb_opcode[2]), .ZN(
+        n99) );
+  MOAI22D1BWP U49 ( .A1(n171), .A2(n188), .B1(alu_in2[9]), .B2(n171), .ZN(
+        exmem_SrcData_in[9]) );
+  MOAI22D1BWP U50 ( .A1(n171), .A2(n187), .B1(alu_in2[8]), .B2(n171), .ZN(
+        exmem_SrcData_in[8]) );
+  MOAI22D1BWP U51 ( .A1(n171), .A2(n186), .B1(alu_in2[7]), .B2(n171), .ZN(
+        exmem_SrcData_in[7]) );
+  MOAI22D1BWP U52 ( .A1(n171), .A2(n185), .B1(alu_in2[6]), .B2(n171), .ZN(
+        exmem_SrcData_in[6]) );
+  MOAI22D1BWP U53 ( .A1(n171), .A2(n184), .B1(alu_in2[5]), .B2(n171), .ZN(
+        exmem_SrcData_in[5]) );
+  MOAI22D1BWP U54 ( .A1(n171), .A2(n183), .B1(alu_in2[4]), .B2(n171), .ZN(
+        exmem_SrcData_in[4]) );
+  MOAI22D1BWP U55 ( .A1(n171), .A2(n182), .B1(alu_in2[3]), .B2(n171), .ZN(
+        exmem_SrcData_in[3]) );
+  MOAI22D1BWP U56 ( .A1(n171), .A2(n181), .B1(alu_in2[2]), .B2(n171), .ZN(
+        exmem_SrcData_in[2]) );
+  MOAI22D1BWP U57 ( .A1(n171), .A2(n180), .B1(alu_in2[1]), .B2(n171), .ZN(
+        exmem_SrcData_in[1]) );
+  MOAI22D1BWP U58 ( .A1(n171), .A2(n194), .B1(alu_in2[15]), .B2(n171), .ZN(
+        exmem_SrcData_in[15]) );
+  MOAI22D1BWP U59 ( .A1(n171), .A2(n193), .B1(alu_in2[14]), .B2(n171), .ZN(
+        exmem_SrcData_in[14]) );
+  MOAI22D1BWP U60 ( .A1(n171), .A2(n192), .B1(alu_in2[13]), .B2(n171), .ZN(
+        exmem_SrcData_in[13]) );
+  MOAI22D1BWP U61 ( .A1(n171), .A2(n191), .B1(alu_in2[12]), .B2(n171), .ZN(
+        exmem_SrcData_in[12]) );
+  MOAI22D1BWP U62 ( .A1(n171), .A2(n190), .B1(alu_in2[11]), .B2(n171), .ZN(
+        exmem_SrcData_in[11]) );
+  MOAI22D1BWP U63 ( .A1(n171), .A2(n189), .B1(alu_in2[10]), .B2(n171), .ZN(
+        exmem_SrcData_in[10]) );
+  MOAI22D1BWP U64 ( .A1(n171), .A2(n179), .B1(alu_in2[0]), .B2(n171), .ZN(
+        exmem_SrcData_in[0]) );
+  IND3D4BWP U65 ( .A1(idex_inst_data[14]), .B1(n102), .B2(idex_inst_data[15]), 
+        .ZN(n101) );
+  NR2XD1BWP U83 ( .A1(n174), .A2(n97), .ZN(cache_mem_valid) );
+  OAI222XD4BWP U84 ( .A1(n104), .A2(n220), .B1(n105), .B2(n106), .C1(n107), 
+        .C2(n188), .ZN(alu_in2[9]) );
+  OAI222XD4BWP U85 ( .A1(n104), .A2(n219), .B1(n108), .B2(n106), .C1(n107), 
+        .C2(n187), .ZN(alu_in2[8]) );
+  OAI222XD4BWP U86 ( .A1(n104), .A2(n218), .B1(n109), .B2(n106), .C1(n107), 
+        .C2(n186), .ZN(alu_in2[7]) );
+  OAI222XD4BWP U87 ( .A1(n104), .A2(n217), .B1(n110), .B2(n106), .C1(n107), 
+        .C2(n185), .ZN(alu_in2[6]) );
+  OAI222XD4BWP U88 ( .A1(n104), .A2(n216), .B1(n111), .B2(n106), .C1(n107), 
+        .C2(n184), .ZN(alu_in2[5]) );
+  OAI222XD4BWP U89 ( .A1(n104), .A2(n215), .B1(n112), .B2(n106), .C1(n107), 
+        .C2(n183), .ZN(alu_in2[4]) );
+  OAI222XD4BWP U90 ( .A1(n104), .A2(n214), .B1(n113), .B2(n106), .C1(n107), 
+        .C2(n182), .ZN(alu_in2[3]) );
+  OAI222XD4BWP U91 ( .A1(n104), .A2(n213), .B1(n114), .B2(n106), .C1(n107), 
+        .C2(n181), .ZN(alu_in2[2]) );
+  OAI222XD4BWP U92 ( .A1(n104), .A2(n212), .B1(n115), .B2(n106), .C1(n107), 
+        .C2(n180), .ZN(alu_in2[1]) );
+  OAI222XD4BWP U93 ( .A1(n104), .A2(n226), .B1(n116), .B2(n106), .C1(n107), 
+        .C2(n194), .ZN(alu_in2[15]) );
+  OAI222XD4BWP U94 ( .A1(n104), .A2(n225), .B1(n117), .B2(n106), .C1(n107), 
+        .C2(n193), .ZN(alu_in2[14]) );
+  OAI222XD4BWP U95 ( .A1(n104), .A2(n224), .B1(n118), .B2(n106), .C1(n107), 
+        .C2(n192), .ZN(alu_in2[13]) );
+  OAI222XD4BWP U96 ( .A1(n104), .A2(n223), .B1(n119), .B2(n106), .C1(n107), 
+        .C2(n191), .ZN(alu_in2[12]) );
+  OAI222XD4BWP U97 ( .A1(n104), .A2(n222), .B1(n120), .B2(n106), .C1(n107), 
+        .C2(n190), .ZN(alu_in2[11]) );
+  OAI222XD4BWP U98 ( .A1(n104), .A2(n221), .B1(n121), .B2(n106), .C1(n107), 
+        .C2(n189), .ZN(alu_in2[10]) );
+  OAI222XD4BWP U99 ( .A1(n104), .A2(n211), .B1(n122), .B2(n106), .C1(n107), 
+        .C2(n179), .ZN(alu_in2[0]) );
+  AN2XD1BWP U100 ( .A1(n123), .A2(n170), .Z(n107) );
+  XOR2D1BWP U101 ( .A1(forwardB[1]), .A2(forwardB[0]), .Z(n123) );
+  ND2D2BWP U102 ( .A1(n102), .A2(n170), .ZN(n106) );
+  INR2XD1BWP U103 ( .A1(forwardB[0]), .B1(forwardB[1]), .ZN(n102) );
+  IND3D4BWP U104 ( .A1(forwardB[0]), .B1(n170), .B2(forwardB[1]), .ZN(n104) );
+  OAI221D2BWP U105 ( .A1(n220), .A2(n124), .B1(n105), .B2(n125), .C(n126), 
+        .ZN(alu_in1[9]) );
+  AOI222D2BWP U106 ( .A1(mem_data[9]), .A2(n127), .B1(n128), .B2(idex_pc[9]), 
+        .C1(idex_SrcData1[9]), .C2(n129), .ZN(n126) );
+  OAI221D2BWP U107 ( .A1(n219), .A2(n124), .B1(n108), .B2(n125), .C(n130), 
+        .ZN(alu_in1[8]) );
+  AOI222D2BWP U108 ( .A1(mem_data[8]), .A2(n127), .B1(n128), .B2(idex_pc[8]), 
+        .C1(idex_SrcData1[8]), .C2(n129), .ZN(n130) );
+  OAI221D2BWP U109 ( .A1(n218), .A2(n124), .B1(n109), .B2(n125), .C(n131), 
+        .ZN(alu_in1[7]) );
+  AOI222D2BWP U110 ( .A1(mem_data[7]), .A2(n127), .B1(n128), .B2(idex_pc[7]), 
+        .C1(idex_SrcData1[7]), .C2(n129), .ZN(n131) );
+  OAI221D2BWP U111 ( .A1(n217), .A2(n124), .B1(n110), .B2(n125), .C(n132), 
+        .ZN(alu_in1[6]) );
+  AOI222D2BWP U112 ( .A1(mem_data[6]), .A2(n127), .B1(n128), .B2(idex_pc[6]), 
+        .C1(idex_SrcData1[6]), .C2(n129), .ZN(n132) );
+  OAI221D2BWP U113 ( .A1(n216), .A2(n124), .B1(n111), .B2(n125), .C(n133), 
+        .ZN(alu_in1[5]) );
+  AOI222D2BWP U114 ( .A1(mem_data[5]), .A2(n127), .B1(n128), .B2(idex_pc[5]), 
+        .C1(idex_SrcData1[5]), .C2(n129), .ZN(n133) );
+  OAI221D2BWP U115 ( .A1(n215), .A2(n124), .B1(n112), .B2(n125), .C(n134), 
+        .ZN(alu_in1[4]) );
+  AOI222D2BWP U116 ( .A1(mem_data[4]), .A2(n127), .B1(n128), .B2(idex_pc[4]), 
+        .C1(idex_SrcData1[4]), .C2(n129), .ZN(n134) );
+  OAI221D2BWP U117 ( .A1(n214), .A2(n124), .B1(n113), .B2(n125), .C(n135), 
+        .ZN(alu_in1[3]) );
+  AOI222D2BWP U118 ( .A1(mem_data[3]), .A2(n127), .B1(n128), .B2(idex_pc[3]), 
+        .C1(idex_SrcData1[3]), .C2(n129), .ZN(n135) );
+  OAI221D2BWP U119 ( .A1(n213), .A2(n124), .B1(n114), .B2(n125), .C(n136), 
+        .ZN(alu_in1[2]) );
+  AOI222D2BWP U120 ( .A1(mem_data[2]), .A2(n127), .B1(n128), .B2(idex_pc[2]), 
+        .C1(idex_SrcData1[2]), .C2(n129), .ZN(n136) );
+  OAI221D2BWP U121 ( .A1(n212), .A2(n124), .B1(n115), .B2(n125), .C(n137), 
+        .ZN(alu_in1[1]) );
+  AOI222D2BWP U122 ( .A1(mem_data[1]), .A2(n127), .B1(n128), .B2(idex_pc[1]), 
+        .C1(idex_SrcData1[1]), .C2(n129), .ZN(n137) );
+  OAI221D2BWP U123 ( .A1(n226), .A2(n124), .B1(n116), .B2(n125), .C(n138), 
+        .ZN(alu_in1[15]) );
+  AOI222D2BWP U124 ( .A1(mem_data[15]), .A2(n127), .B1(n128), .B2(idex_pc[15]), 
+        .C1(idex_SrcData1[15]), .C2(n129), .ZN(n138) );
+  OAI221D2BWP U125 ( .A1(n225), .A2(n124), .B1(n117), .B2(n125), .C(n139), 
+        .ZN(alu_in1[14]) );
+  AOI222D2BWP U126 ( .A1(mem_data[14]), .A2(n127), .B1(n128), .B2(idex_pc[14]), 
+        .C1(idex_SrcData1[14]), .C2(n129), .ZN(n139) );
+  OAI221D2BWP U127 ( .A1(n224), .A2(n124), .B1(n118), .B2(n125), .C(n140), 
+        .ZN(alu_in1[13]) );
+  AOI222D2BWP U128 ( .A1(mem_data[13]), .A2(n127), .B1(n128), .B2(idex_pc[13]), 
+        .C1(idex_SrcData1[13]), .C2(n129), .ZN(n140) );
+  OAI221D2BWP U129 ( .A1(n223), .A2(n124), .B1(n119), .B2(n125), .C(n141), 
+        .ZN(alu_in1[12]) );
+  AOI222D2BWP U130 ( .A1(mem_data[12]), .A2(n127), .B1(n128), .B2(idex_pc[12]), 
+        .C1(idex_SrcData1[12]), .C2(n129), .ZN(n141) );
+  OAI221D2BWP U131 ( .A1(n222), .A2(n124), .B1(n120), .B2(n125), .C(n142), 
+        .ZN(alu_in1[11]) );
+  AOI222D2BWP U132 ( .A1(mem_data[11]), .A2(n127), .B1(n128), .B2(idex_pc[11]), 
+        .C1(idex_SrcData1[11]), .C2(n129), .ZN(n142) );
+  OAI221D2BWP U133 ( .A1(n221), .A2(n124), .B1(n121), .B2(n125), .C(n143), 
+        .ZN(alu_in1[10]) );
+  AOI222D2BWP U134 ( .A1(mem_data[10]), .A2(n127), .B1(n128), .B2(idex_pc[10]), 
+        .C1(idex_SrcData1[10]), .C2(n129), .ZN(n143) );
+  OAI221D2BWP U135 ( .A1(n211), .A2(n124), .B1(n122), .B2(n125), .C(n144), 
+        .ZN(alu_in1[0]) );
+  AOI222D2BWP U136 ( .A1(mem_data[0]), .A2(n127), .B1(n128), .B2(idex_pc[0]), 
+        .C1(idex_SrcData1[0]), .C2(n129), .ZN(n144) );
+  AN2XD1BWP U137 ( .A1(n145), .A2(n146), .Z(n129) );
+  INR2XD1BWP U138 ( .A1(n145), .B1(n146), .ZN(n128) );
+  IND2D2BWP U139 ( .A1(n96), .B1(idex_opcode[1]), .ZN(n146) );
+  IND3D4BWP U140 ( .A1(idex_opcode[0]), .B1(idex_opcode[2]), .B2(
+        idex_opcode[3]), .ZN(n96) );
+  ND2D2BWP U141 ( .A1(n147), .A2(n170), .ZN(n145) );
+  XNR2D1BWP U142 ( .A1(n172), .A2(forwardA[0]), .ZN(n147) );
+  AN2XD1BWP U143 ( .A1(n148), .A2(n149), .Z(n127) );
+  ND3D3BWP U144 ( .A1(n170), .A2(n172), .A3(forwardA[0]), .ZN(n125) );
+  IND2D2BWP U145 ( .A1(n149), .B1(n148), .ZN(n124) );
+  NR3D2BWP U146 ( .A1(flush_in), .A2(forwardA[0]), .A3(n172), .ZN(n148) );
+  NR2XD1BWP U147 ( .A1(n97), .A2(exmem_opcode[0]), .ZN(n149) );
+  ND2D2BWP U148 ( .A1(n150), .A2(exmem_opcode[3]), .ZN(n97) );
+  NR2XD1BWP U149 ( .A1(exmem_opcode[2]), .A2(exmem_opcode[1]), .ZN(n150) );
+  OR2D1BWP U150 ( .A1(finished), .A2(n93), .Z(_4_net_) );
+  AN4XD1BWP U151 ( .A1(inst_data[14]), .A2(inst_data[13]), .A3(inst_data[15]), 
+        .A4(n151), .Z(n93) );
+  INR3D1BWP U152 ( .A1(inst_data[12]), .B1(flush_in), .B2(flush), .ZN(n151) );
+  IND2D2BWP U153 ( .A1(memwb_flush), .B1(rst_n), .ZN(_25_net_) );
+  OR2D1BWP U154 ( .A1(exmem_stall), .A2(n233), .Z(_24_net_) );
+  OR2D1BWP U155 ( .A1(idex_stall), .A2(n233), .Z(_22_net_) );
+  IND3D4BWP U156 ( .A1(stall_ifid_reset), .B1(rst_n), .B2(n152), .ZN(_17_net_)
+         );
+  INR3D1BWP U157 ( .A1(stall_in), .B1(i_miss_detected), .B2(i_filling_cache), 
+        .ZN(_11_net_) );
+  AN2XD1BWP U158 ( .A1(n168), .A2(n152), .Z(miss_or_stall) );
+  ND2D2BWP U159 ( .A1(stall_in), .A2(rst_n), .ZN(n152) );
+  NR4D1BWP U160 ( .A1(d_miss_detected), .A2(d_filling_cache), .A3(
+        i_filling_cache), .A4(i_miss_detected), .ZN(n168) );
+  MOAI22D1BWP U161 ( .A1(n178), .A2(n177), .B1(ifid_rd[3]), .B2(n178), .ZN(
+        SrcReg2[3]) );
+  AO22D1BWP U162 ( .A1(n153), .A2(ifid_rt[2]), .B1(ifid_rd[2]), .B2(n178), .Z(
+        SrcReg2[2]) );
+  MOAI22D1BWP U163 ( .A1(n178), .A2(n176), .B1(ifid_rd[1]), .B2(n178), .ZN(
+        SrcReg2[1]) );
+  MOAI22D1BWP U164 ( .A1(n178), .A2(n175), .B1(ifid_rd[0]), .B2(n178), .ZN(
+        SrcReg2[0]) );
+  IND3D4BWP U165 ( .A1(ifid_opcode[2]), .B1(ifid_opcode[1]), .B2(
+        ifid_opcode[3]), .ZN(n153) );
+  MOAI22D1BWP U166 ( .A1(n105), .A2(n154), .B1(SrcData2[9]), .B2(n154), .ZN(
+        SrcData2_fwd[9]) );
+  MOAI22D1BWP U167 ( .A1(n108), .A2(n154), .B1(SrcData2[8]), .B2(n154), .ZN(
+        SrcData2_fwd[8]) );
+  MOAI22D1BWP U168 ( .A1(n109), .A2(n154), .B1(SrcData2[7]), .B2(n154), .ZN(
+        SrcData2_fwd[7]) );
+  MOAI22D1BWP U169 ( .A1(n110), .A2(n154), .B1(SrcData2[6]), .B2(n154), .ZN(
+        SrcData2_fwd[6]) );
+  MOAI22D1BWP U170 ( .A1(n111), .A2(n154), .B1(SrcData2[5]), .B2(n154), .ZN(
+        SrcData2_fwd[5]) );
+  MOAI22D1BWP U171 ( .A1(n112), .A2(n154), .B1(SrcData2[4]), .B2(n154), .ZN(
+        SrcData2_fwd[4]) );
+  MOAI22D1BWP U172 ( .A1(n113), .A2(n154), .B1(SrcData2[3]), .B2(n154), .ZN(
+        SrcData2_fwd[3]) );
+  MOAI22D1BWP U173 ( .A1(n114), .A2(n154), .B1(SrcData2[2]), .B2(n154), .ZN(
+        SrcData2_fwd[2]) );
+  MOAI22D1BWP U174 ( .A1(n115), .A2(n154), .B1(SrcData2[1]), .B2(n154), .ZN(
+        SrcData2_fwd[1]) );
+  MOAI22D1BWP U175 ( .A1(n116), .A2(n154), .B1(SrcData2[15]), .B2(n154), .ZN(
+        SrcData2_fwd[15]) );
+  MOAI22D1BWP U176 ( .A1(n117), .A2(n154), .B1(SrcData2[14]), .B2(n154), .ZN(
+        SrcData2_fwd[14]) );
+  MOAI22D1BWP U177 ( .A1(n118), .A2(n154), .B1(SrcData2[13]), .B2(n154), .ZN(
+        SrcData2_fwd[13]) );
+  MOAI22D1BWP U178 ( .A1(n119), .A2(n154), .B1(SrcData2[12]), .B2(n154), .ZN(
+        SrcData2_fwd[12]) );
+  MOAI22D1BWP U179 ( .A1(n120), .A2(n154), .B1(SrcData2[11]), .B2(n154), .ZN(
+        SrcData2_fwd[11]) );
+  MOAI22D1BWP U180 ( .A1(n121), .A2(n154), .B1(SrcData2[10]), .B2(n154), .ZN(
+        SrcData2_fwd[10]) );
+  MOAI22D1BWP U181 ( .A1(n122), .A2(n154), .B1(SrcData2[0]), .B2(n154), .ZN(
+        SrcData2_fwd[0]) );
+  ND4D2BWP U182 ( .A1(n155), .A2(n156), .A3(n157), .A4(n158), .ZN(n154) );
+  NR3D2BWP U183 ( .A1(n159), .A2(n160), .A3(n173), .ZN(n158) );
+  XOR2D1BWP U184 ( .A1(memwb_rd[2]), .A2(ifid_rt[2]), .Z(n159) );
+  XNR2D1BWP U185 ( .A1(n227), .A2(n175), .ZN(n157) );
+  XNR2D1BWP U186 ( .A1(n229), .A2(n177), .ZN(n156) );
+  XNR2D1BWP U187 ( .A1(n228), .A2(n176), .ZN(n155) );
+  MOAI22D1BWP U188 ( .A1(n105), .A2(n161), .B1(SrcData1[9]), .B2(n161), .ZN(
+        SrcData1_fwd[9]) );
+  MOAI22D1BWP U189 ( .A1(n108), .A2(n161), .B1(SrcData1[8]), .B2(n161), .ZN(
+        SrcData1_fwd[8]) );
+  MOAI22D1BWP U190 ( .A1(n109), .A2(n161), .B1(SrcData1[7]), .B2(n161), .ZN(
+        SrcData1_fwd[7]) );
+  MOAI22D1BWP U191 ( .A1(n110), .A2(n161), .B1(SrcData1[6]), .B2(n161), .ZN(
+        SrcData1_fwd[6]) );
+  MOAI22D1BWP U192 ( .A1(n111), .A2(n161), .B1(SrcData1[5]), .B2(n161), .ZN(
+        SrcData1_fwd[5]) );
+  MOAI22D1BWP U193 ( .A1(n112), .A2(n161), .B1(SrcData1[4]), .B2(n161), .ZN(
+        SrcData1_fwd[4]) );
+  MOAI22D1BWP U194 ( .A1(n113), .A2(n161), .B1(SrcData1[3]), .B2(n161), .ZN(
+        SrcData1_fwd[3]) );
+  MOAI22D1BWP U195 ( .A1(n114), .A2(n161), .B1(SrcData1[2]), .B2(n161), .ZN(
+        SrcData1_fwd[2]) );
+  MOAI22D1BWP U196 ( .A1(n115), .A2(n161), .B1(SrcData1[1]), .B2(n161), .ZN(
+        SrcData1_fwd[1]) );
+  MOAI22D1BWP U197 ( .A1(n116), .A2(n161), .B1(SrcData1[15]), .B2(n161), .ZN(
+        SrcData1_fwd[15]) );
+  MOAI22D1BWP U198 ( .A1(n117), .A2(n161), .B1(SrcData1[14]), .B2(n161), .ZN(
+        SrcData1_fwd[14]) );
+  MOAI22D1BWP U199 ( .A1(n118), .A2(n161), .B1(SrcData1[13]), .B2(n161), .ZN(
+        SrcData1_fwd[13]) );
+  MOAI22D1BWP U200 ( .A1(n119), .A2(n161), .B1(SrcData1[12]), .B2(n161), .ZN(
+        SrcData1_fwd[12]) );
+  MOAI22D1BWP U201 ( .A1(n120), .A2(n161), .B1(SrcData1[11]), .B2(n161), .ZN(
+        SrcData1_fwd[11]) );
+  MOAI22D1BWP U202 ( .A1(n121), .A2(n161), .B1(SrcData1[10]), .B2(n161), .ZN(
+        SrcData1_fwd[10]) );
+  MOAI22D1BWP U203 ( .A1(n122), .A2(n161), .B1(SrcData1[0]), .B2(n161), .ZN(
+        SrcData1_fwd[0]) );
+  ND4D2BWP U204 ( .A1(n162), .A2(n163), .A3(n164), .A4(n165), .ZN(n161) );
+  NR3D2BWP U205 ( .A1(n166), .A2(n160), .A3(n173), .ZN(n165) );
+  NR4D1BWP U206 ( .A1(memwb_rd[0]), .A2(memwb_rd[1]), .A3(memwb_rd[2]), .A4(
+        memwb_rd[3]), .ZN(n160) );
+  XOR2D1BWP U207 ( .A1(memwb_rd[2]), .A2(ifid_rs[2]), .Z(n166) );
+  XNR2D1BWP U208 ( .A1(ifid_rs[0]), .A2(memwb_rd[0]), .ZN(n164) );
+  XNR2D1BWP U209 ( .A1(ifid_rs[1]), .A2(memwb_rd[1]), .ZN(n163) );
+  XNR2D1BWP U210 ( .A1(ifid_rs[3]), .A2(memwb_rd[3]), .ZN(n162) );
+  MOAI22D1BWP U211 ( .A1(n167), .A2(n229), .B1(memwb_rt[3]), .B2(n167), .ZN(
+        DstReg[3]) );
+  AO22D1BWP U212 ( .A1(n230), .A2(memwb_rd[2]), .B1(memwb_rt[2]), .B2(n167), 
+        .Z(DstReg[2]) );
+  MOAI22D1BWP U213 ( .A1(n167), .A2(n228), .B1(memwb_rt[1]), .B2(n167), .ZN(
+        DstReg[1]) );
+  MOAI22D1BWP U214 ( .A1(n167), .A2(n227), .B1(memwb_rt[0]), .B2(n167), .ZN(
+        DstReg[0]) );
+  AOI22D2BWP U215 ( .A1(alu_out_p4[9]), .A2(n230), .B1(mem_out_p4[9]), .B2(
+        n167), .ZN(n105) );
+  AOI22D2BWP U216 ( .A1(alu_out_p4[8]), .A2(n230), .B1(mem_out_p4[8]), .B2(
+        n167), .ZN(n108) );
+  AOI22D2BWP U217 ( .A1(alu_out_p4[7]), .A2(n230), .B1(mem_out_p4[7]), .B2(
+        n167), .ZN(n109) );
+  AOI22D2BWP U218 ( .A1(alu_out_p4[6]), .A2(n230), .B1(mem_out_p4[6]), .B2(
+        n167), .ZN(n110) );
+  AOI22D2BWP U219 ( .A1(alu_out_p4[5]), .A2(n230), .B1(mem_out_p4[5]), .B2(
+        n167), .ZN(n111) );
+  AOI22D2BWP U220 ( .A1(alu_out_p4[4]), .A2(n230), .B1(mem_out_p4[4]), .B2(
+        n167), .ZN(n112) );
+  AOI22D2BWP U221 ( .A1(alu_out_p4[3]), .A2(n230), .B1(mem_out_p4[3]), .B2(
+        n167), .ZN(n113) );
+  AOI22D2BWP U222 ( .A1(alu_out_p4[2]), .A2(n230), .B1(mem_out_p4[2]), .B2(
+        n167), .ZN(n114) );
+  AOI22D2BWP U223 ( .A1(alu_out_p4[1]), .A2(n230), .B1(mem_out_p4[1]), .B2(
+        n167), .ZN(n115) );
+  AOI22D2BWP U224 ( .A1(alu_out_p4[15]), .A2(n230), .B1(mem_out_p4[15]), .B2(
+        n167), .ZN(n116) );
+  AOI22D2BWP U225 ( .A1(alu_out_p4[14]), .A2(n230), .B1(mem_out_p4[14]), .B2(
+        n167), .ZN(n117) );
+  AOI22D2BWP U226 ( .A1(alu_out_p4[13]), .A2(n230), .B1(mem_out_p4[13]), .B2(
+        n167), .ZN(n118) );
+  AOI22D2BWP U227 ( .A1(alu_out_p4[12]), .A2(n230), .B1(mem_out_p4[12]), .B2(
+        n167), .ZN(n119) );
+  AOI22D2BWP U228 ( .A1(alu_out_p4[11]), .A2(n230), .B1(mem_out_p4[11]), .B2(
+        n167), .ZN(n120) );
+  AOI22D2BWP U229 ( .A1(alu_out_p4[10]), .A2(n230), .B1(mem_out_p4[10]), .B2(
+        n167), .ZN(n121) );
+  AOI22D2BWP U230 ( .A1(alu_out_p4[0]), .A2(n230), .B1(mem_out_p4[0]), .B2(
+        n167), .ZN(n122) );
+  NR4D1BWP U231 ( .A1(n232), .A2(memwb_opcode[0]), .A3(memwb_opcode[1]), .A4(
+        memwb_opcode[2]), .ZN(n167) );
+  CKND2BWP U239 ( .I(n122), .ZN(n17) );
+  CKND2BWP U240 ( .I(n121), .ZN(n18) );
+  CKND2BWP U241 ( .I(n120), .ZN(n19) );
+  CKND2BWP U242 ( .I(n119), .ZN(n20) );
+  CKND2BWP U243 ( .I(n118), .ZN(n21) );
+  CKND2BWP U244 ( .I(n117), .ZN(n22) );
+  CKND2BWP U245 ( .I(n116), .ZN(n23) );
+  CKND2BWP U246 ( .I(n115), .ZN(n24) );
+  CKND2BWP U247 ( .I(n114), .ZN(n25) );
+  CKND2BWP U248 ( .I(n113), .ZN(n26) );
+  CKND2BWP U249 ( .I(n112), .ZN(n27) );
+  CKND2BWP U250 ( .I(n111), .ZN(n28) );
+  CKND2BWP U251 ( .I(n110), .ZN(n29) );
+  CKND2BWP U252 ( .I(n109), .ZN(n30) );
+  CKND2BWP U253 ( .I(n108), .ZN(n31) );
+  CKND2BWP U254 ( .I(n105), .ZN(n32) );
+  CKND2BWP U312 ( .I(rst_n), .ZN(n90) );
+  Register_0 program_counter ( .clk(clk), .rst(n90), .D(updated_PC), 
+        .WriteReg(miss_or_stall), .ReadEnable1(1'b1), .ReadEnable2(1'b0), 
+        .Bitline1({pc_out[15:2], \add_35/carry [2], defaultPC[0]}) );
+  counter valid_counter ( .clk(clk), .rst(n90), .valid(valid), .enable(
+        init_enable) );
+  cache instruction_cache ( .clk(clk), .rst_n(rst_n), .address({pc_out[15:2], 
+        \add_35/carry [2], defaultPC[0]}), .mem_data({1'b0, 1'b0, 1'b0, 1'b0, 
+        1'b0, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0, 1'b0}), .mem_data_valid(1'b0), .memory_address(i_memory_address), .instruction(
+        inst_data), .filling_cache(i_filling_cache), .miss_detected(
+        i_miss_detected) );
+  dcache data_cache ( .clk(clk), .rst_n(rst_n), .address(alu_out_p3), 
+        .data_in(d_data_in), .enable(cache_mem_valid), .mem_wr(n169), .write(
+        1'b0), .mem_data_valid(1'b0), .memory_address(d_memory_address), 
+        .data_out(mem_data), .filling_cache(d_filling_cache), .miss_detected(
+        d_miss_detected) );
+  cache_controller controller ( .clk(clk), .rst_n(rst_n), .i_mem_en(1'b1), 
+        .d_mem_en(cache_mem_valid), .i_miss_detected(i_miss_detected), 
+        .d_miss_detected(d_miss_detected), .d_mem_wr(n169), .i_address(
+        i_memory_address), .d_address(d_memory_address), .d_data_in(d_data_in), 
+        .i_filling_cache(i_filling_cache), .d_filling_cache(d_filling_cache)
+         );
+  dff_0 halt_ff ( .q(finished), .d(_4_net_), .wen(1'b1), .clk(clk), .rst(n90)
+         );
+  dff_35422 flush_ff ( .q(flush), .d(flush_in), .wen(1'b1), .clk(clk), .rst(
+        n90) );
+  dff_35421 rst_ff ( .q(rst_flag), .d(rst_n), .wen(1'b1), .clk(clk), .rst(n90)
+         );
+  instruction_fetch_0 if_id ( .instruction(ifid_inst_data), .rd(ifid_rd), .rs(
+        ifid_rs), .rt(ifid_rt), .opcode({ifid_opcode[3:1], 
+        SYNOPSYS_UNCONNECTED__0}), .rst_prev(rst_flag) );
+  instruction_fetch_3 id_ex ( .instruction(idex_inst_data), .rd({
+        SYNOPSYS_UNCONNECTED__1, SYNOPSYS_UNCONNECTED__2, 
+        SYNOPSYS_UNCONNECTED__3, \idex_rd[0] }), .rs(idex_rs), .rt(idex_rt), 
+        .opcode(idex_opcode), .u(idex_u), .cond(idex_cond), .cyclops(
+        idex_cyclops), .rst_prev(rst_flag) );
+  instruction_fetch_2 ex_mem ( .instruction(exmem_inst_data), .rd(exmem_rd), 
+        .opcode(exmem_opcode), .write_en(exmem_reg_write_en), .rst_prev(
+        rst_flag) );
+  instruction_fetch_1 mem_wb ( .instruction(memwb_inst_data), .rd(memwb_rd), 
+        .rt(memwb_rt), .opcode(memwb_opcode), .write_en(memwb_reg_write_en), 
+        .rst_prev(rst_flag) );
+  dff_35420 stall_reset ( .q(stall_ifid_reset), .d(_11_net_), .wen(1'b1), 
+        .clk(clk), .rst(n90) );
+  ifid ifid_pipe ( .clk(clk), .flush(flush_in), .rst(n90), .write(
+        miss_or_stall), .stall_in(_17_net_), .ifid_nvz({1'b0, 1'b0, 1'b0}), 
+        .inst_data(inst_data), .pc(updated_PC), .ifid_flush(ifid_flush), 
+        .inst_data_pl(ifid_inst_data), .pc_pl(ifid_pc) );
+  hazard_unit hazard_unit ( .ifid_rt(ifid_rt), .ifid_rs(ifid_rs), .idex_rt(
+        idex_rt), .idex_cyclops(idex_cyclops), .stall(stall_in) );
+  RegisterFile register_file ( .clk(clk), .rst(n90), .SrcReg1(ifid_rs), 
+        .SrcReg2(SrcReg2), .DstReg(DstReg), .WriteReg(final_enable), .DstData(
+        {n23, n22, n21, n20, n19, n18, n32, n31, n30, n29, n28, n27, n26, n25, 
+        n24, n17}), .SrcData1(SrcData1), .SrcData2(SrcData2) );
+  idex idex_pipe ( .clk(clk), .rst(n90), .stall_reset(stall_ifid_reset), 
+        .flush(flush_in), .write(n168), .stall_in(_17_net_), .ifid_flush(
+        ifid_flush), .idex_nvz({1'b0, 1'b0, 1'b0}), .inst_data(ifid_inst_data), 
+        .pc(ifid_pc), .SrcData1(SrcData1_fwd), .SrcData2(SrcData2_fwd), 
+        .stall_out(idex_stall), .flush_out(idex_flush), .inst_data_pl(
+        idex_inst_data), .pc_pl(idex_pc), .SrcData1_pl(idex_SrcData1), 
+        .SrcData2_pl(idex_SrcData2) );
+  dff_35419 z_flag ( .q(read_flag[0]), .d(setZ), .wen(write_flag_en), .clk(clk), .rst(n90) );
+  dff_35418 v_flag ( .q(read_flag[1]), .d(setV), .wen(write_flag_en), .clk(clk), .rst(n90) );
+  dff_35417 n_flag ( .q(read_flag[2]), .d(setN), .wen(write_flag_en), .clk(clk), .rst(n90) );
+  forwarding_unit forwarding ( .exmem_rd(exmem_rd), .memwb_rd(memwb_rd), 
+        .idex_rs(idex_rs), .idex_rt(idex_rt), .exmem_reg_write_en(
+        exmem_reg_write_en), .memwb_reg_write_en(memwb_reg_write_en), 
+        .forwardA(forwardA), .forwardB(forwardB) );
+  ALU alu ( .opcode(idex_opcode), .offset(idex_u[3:0]), .u(idex_u), .alu_in1(
+        alu_in1), .alu_in2(alu_in2), .alu_out(alu_out), .n_in(read_flag[2]), 
+        .v_in(read_flag[1]), .z_in(read_flag[0]), .write_flag_en(write_flag_en), .n(setN), .v(setV), .z(setZ), .rst_n(rst_n) );
+  PC_control pc_control ( .opcode(idex_opcode), .C(idex_cond), .It({
+        \idex_rd[0] , idex_u}), .F(read_flag), .alu_rs(idex_SrcData1), .PC_in(
+        test), .PC_out(calcPC), .flush(flush_in) );
+  exmem exmem_pipe ( .clk(clk), .rst(n90), .flush(idex_flush), .write(n168), 
+        .stall_in(_22_net_), .nvz(read_flag), .inst_data(idex_inst_data), 
+        .alu_out(alu_out), .SrcData(exmem_SrcData_in), .calcPC(calcPC), 
+        .idexpc(idex_pc), .stall_out(exmem_stall), .flush_out(exmem_flush), 
+        .nvz_pl(exmem_nvz), .inst_data_pl(exmem_inst_data), .alu_out_pl(
+        alu_out_p3), .SrcData_pl(d_data_in), .exmemPC(exmemPC) );
+  memwb memwb_pipe ( .clk(clk), .rst(n90), .flush(exmem_flush), .write(n168), 
+        .stall_in(_24_net_), .nvz(exmem_nvz), .inst_data(exmem_inst_data), 
+        .mem_out(mem_data), .alu_out(alu_out_p3), .exmemPC(exmemPC), 
+        .stall_out(memwb_stall), .flush_out(memwb_flush), .inst_data_pl(
+        memwb_inst_data), .mem_out_pl(mem_out_p4), .alu_out_pl(alu_out_p4) );
+  dff_35416 delayer ( .q(delayed_memwb_flush), .d(_25_net_), .wen(1'b1), .clk(
+        clk), .rst(n90) );
+  CKXOR2D0BWP U313 ( .A1(pc_out[15]), .A2(\add_35/carry [15]), .Z(
+        defaultPC[15]) );
+  AN2D0BWP U314 ( .A1(\add_35/carry [14]), .A2(pc_out[14]), .Z(
+        \add_35/carry [15]) );
+  CKXOR2D0BWP U315 ( .A1(\add_35/carry [14]), .A2(pc_out[14]), .Z(
+        defaultPC[14]) );
+  AN2D0BWP U316 ( .A1(\add_35/carry [13]), .A2(pc_out[13]), .Z(
+        \add_35/carry [14]) );
+  CKXOR2D0BWP U317 ( .A1(\add_35/carry [13]), .A2(pc_out[13]), .Z(
+        defaultPC[13]) );
+  AN2D0BWP U318 ( .A1(\add_35/carry [12]), .A2(pc_out[12]), .Z(
+        \add_35/carry [13]) );
+  CKXOR2D0BWP U319 ( .A1(\add_35/carry [12]), .A2(pc_out[12]), .Z(
+        defaultPC[12]) );
+  AN2D0BWP U320 ( .A1(\add_35/carry [11]), .A2(pc_out[11]), .Z(
+        \add_35/carry [12]) );
+  CKXOR2D0BWP U321 ( .A1(\add_35/carry [11]), .A2(pc_out[11]), .Z(
+        defaultPC[11]) );
+  AN2D0BWP U322 ( .A1(\add_35/carry [10]), .A2(pc_out[10]), .Z(
+        \add_35/carry [11]) );
+  CKXOR2D0BWP U323 ( .A1(\add_35/carry [10]), .A2(pc_out[10]), .Z(
+        defaultPC[10]) );
+  AN2D0BWP U324 ( .A1(\add_35/carry [9]), .A2(pc_out[9]), .Z(
+        \add_35/carry [10]) );
+  CKXOR2D0BWP U325 ( .A1(\add_35/carry [9]), .A2(pc_out[9]), .Z(defaultPC[9])
+         );
+  AN2D0BWP U326 ( .A1(\add_35/carry [8]), .A2(pc_out[8]), .Z(\add_35/carry [9]) );
+  CKXOR2D0BWP U327 ( .A1(\add_35/carry [8]), .A2(pc_out[8]), .Z(defaultPC[8])
+         );
+  AN2D0BWP U328 ( .A1(\add_35/carry [7]), .A2(pc_out[7]), .Z(\add_35/carry [8]) );
+  CKXOR2D0BWP U329 ( .A1(\add_35/carry [7]), .A2(pc_out[7]), .Z(defaultPC[7])
+         );
+  AN2D0BWP U330 ( .A1(\add_35/carry [6]), .A2(pc_out[6]), .Z(\add_35/carry [7]) );
+  CKXOR2D0BWP U331 ( .A1(\add_35/carry [6]), .A2(pc_out[6]), .Z(defaultPC[6])
+         );
+  AN2D0BWP U332 ( .A1(\add_35/carry [5]), .A2(pc_out[5]), .Z(\add_35/carry [6]) );
+  CKXOR2D0BWP U333 ( .A1(\add_35/carry [5]), .A2(pc_out[5]), .Z(defaultPC[5])
+         );
+  AN2D0BWP U334 ( .A1(\add_35/carry [4]), .A2(pc_out[4]), .Z(\add_35/carry [5]) );
+  CKXOR2D0BWP U335 ( .A1(\add_35/carry [4]), .A2(pc_out[4]), .Z(defaultPC[4])
+         );
+  AN2D0BWP U336 ( .A1(\add_35/carry [3]), .A2(pc_out[3]), .Z(\add_35/carry [4]) );
+  CKXOR2D0BWP U337 ( .A1(\add_35/carry [3]), .A2(pc_out[3]), .Z(defaultPC[3])
+         );
+  AN2D0BWP U338 ( .A1(\add_35/carry [2]), .A2(pc_out[2]), .Z(\add_35/carry [3]) );
+  CKXOR2D0BWP U339 ( .A1(\add_35/carry [2]), .A2(pc_out[2]), .Z(defaultPC[2])
+         );
+  CKND0BWP U340 ( .I(\add_35/carry [2]), .ZN(defaultPC[1]) );
+  CKND2BWP U360 ( .I(flush_in), .ZN(n170) );
+  CKND2BWP U361 ( .I(n101), .ZN(n171) );
+  CKND2BWP U362 ( .I(forwardA[1]), .ZN(n172) );
+  CKND2BWP U363 ( .I(memwb_reg_write_en), .ZN(n173) );
+  CKND2BWP U364 ( .I(valid), .ZN(n174) );
+  CKND2BWP U365 ( .I(ifid_rt[0]), .ZN(n175) );
+  CKND2BWP U366 ( .I(ifid_rt[1]), .ZN(n176) );
+  CKND2BWP U367 ( .I(ifid_rt[3]), .ZN(n177) );
+  CKND2BWP U368 ( .I(n153), .ZN(n178) );
+  CKND2BWP U369 ( .I(idex_SrcData2[0]), .ZN(n179) );
+  CKND2BWP U370 ( .I(idex_SrcData2[1]), .ZN(n180) );
+  CKND2BWP U371 ( .I(idex_SrcData2[2]), .ZN(n181) );
+  CKND2BWP U372 ( .I(idex_SrcData2[3]), .ZN(n182) );
+  CKND2BWP U373 ( .I(idex_SrcData2[4]), .ZN(n183) );
+  CKND2BWP U374 ( .I(idex_SrcData2[5]), .ZN(n184) );
+  CKND2BWP U375 ( .I(idex_SrcData2[6]), .ZN(n185) );
+  CKND2BWP U376 ( .I(idex_SrcData2[7]), .ZN(n186) );
+  CKND2BWP U377 ( .I(idex_SrcData2[8]), .ZN(n187) );
+  CKND2BWP U378 ( .I(idex_SrcData2[9]), .ZN(n188) );
+  CKND2BWP U379 ( .I(idex_SrcData2[10]), .ZN(n189) );
+  CKND2BWP U380 ( .I(idex_SrcData2[11]), .ZN(n190) );
+  CKND2BWP U381 ( .I(idex_SrcData2[12]), .ZN(n191) );
+  CKND2BWP U382 ( .I(idex_SrcData2[13]), .ZN(n192) );
+  CKND2BWP U383 ( .I(idex_SrcData2[14]), .ZN(n193) );
+  CKND2BWP U384 ( .I(idex_SrcData2[15]), .ZN(n194) );
+  CKND2BWP U385 ( .I(idex_pc[0]), .ZN(n195) );
+  CKND2BWP U386 ( .I(idex_pc[1]), .ZN(n196) );
+  CKND2BWP U387 ( .I(idex_pc[2]), .ZN(n197) );
+  CKND2BWP U388 ( .I(idex_pc[3]), .ZN(n198) );
+  CKND2BWP U389 ( .I(idex_pc[4]), .ZN(n199) );
+  CKND2BWP U390 ( .I(idex_pc[5]), .ZN(n200) );
+  CKND2BWP U391 ( .I(idex_pc[6]), .ZN(n201) );
+  CKND2BWP U392 ( .I(idex_pc[7]), .ZN(n202) );
+  CKND2BWP U393 ( .I(idex_pc[8]), .ZN(n203) );
+  CKND2BWP U394 ( .I(idex_pc[9]), .ZN(n204) );
+  CKND2BWP U395 ( .I(idex_pc[10]), .ZN(n205) );
+  CKND2BWP U396 ( .I(idex_pc[11]), .ZN(n206) );
+  CKND2BWP U397 ( .I(idex_pc[12]), .ZN(n207) );
+  CKND2BWP U398 ( .I(idex_pc[13]), .ZN(n208) );
+  CKND2BWP U399 ( .I(idex_pc[14]), .ZN(n209) );
+  CKND2BWP U400 ( .I(idex_pc[15]), .ZN(n210) );
+  CKND2BWP U401 ( .I(alu_out_p3[0]), .ZN(n211) );
+  CKND2BWP U402 ( .I(alu_out_p3[1]), .ZN(n212) );
+  CKND2BWP U403 ( .I(alu_out_p3[2]), .ZN(n213) );
+  CKND2BWP U404 ( .I(alu_out_p3[3]), .ZN(n214) );
+  CKND2BWP U405 ( .I(alu_out_p3[4]), .ZN(n215) );
+  CKND2BWP U406 ( .I(alu_out_p3[5]), .ZN(n216) );
+  CKND2BWP U407 ( .I(alu_out_p3[6]), .ZN(n217) );
+  CKND2BWP U408 ( .I(alu_out_p3[7]), .ZN(n218) );
+  CKND2BWP U409 ( .I(alu_out_p3[8]), .ZN(n219) );
+  CKND2BWP U410 ( .I(alu_out_p3[9]), .ZN(n220) );
+  CKND2BWP U411 ( .I(alu_out_p3[10]), .ZN(n221) );
+  CKND2BWP U412 ( .I(alu_out_p3[11]), .ZN(n222) );
+  CKND2BWP U413 ( .I(alu_out_p3[12]), .ZN(n223) );
+  CKND2BWP U414 ( .I(alu_out_p3[13]), .ZN(n224) );
+  CKND2BWP U415 ( .I(alu_out_p3[14]), .ZN(n225) );
+  CKND2BWP U416 ( .I(alu_out_p3[15]), .ZN(n226) );
+  CKND2BWP U417 ( .I(memwb_rd[0]), .ZN(n227) );
+  CKND2BWP U418 ( .I(memwb_rd[1]), .ZN(n228) );
+  CKND2BWP U419 ( .I(memwb_rd[3]), .ZN(n229) );
+  CKND2BWP U420 ( .I(n167), .ZN(n230) );
+  CKND2BWP U421 ( .I(memwb_opcode[1]), .ZN(n231) );
+  CKND2BWP U422 ( .I(memwb_opcode[3]), .ZN(n232) );
+  CKND2BWP U423 ( .I(rst_n), .ZN(n233) );
+endmodule
+
