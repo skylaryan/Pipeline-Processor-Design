@@ -1,0 +1,101 @@
+# Exercise 08 - Synthesizing your ALU
+# Synthesis Script
+# Tristen Hallock, Sadeq Hashemi Nejad, Skylar Yan, Casey Loyda
+
+#######################################
+# Read in verilog files #
+#######################################
+read_file -format verilog 16b_barrel_shifter.v
+read_file -format verilog 7_128_decoder.v
+read_file -format verilog adder_1bit.v
+read_file -format verilog adder_3b.v 
+read_file -format verilog add_sub16b.v
+read_file -format verilog addsub_4bit.v
+read_file -format verilog alu.v
+read_file -format verilog BitCell.v
+read_file -format verilog  cache_controller.v
+read_file -format verilog cache_counter.v
+read_file -format verilog cache_fill_fsm.v
+read_file -format verilog cache.v
+read_file -format verilog  CLA_4b.v
+read_file -format verilog control.v
+read_file -format verilog counter.v
+read_file -format verilog cpu.v
+read_file -format verilog DataArray.v
+read_file -format verilog dcache.v 
+read_file -format verilog decoder_3_8.v
+read_file -format verilog D-Flip-Flop.v
+read_file -format verilog  exmem.v
+read_file -format verilog forwarding_unit.v
+read_file -format verilog hazard_detection.v
+read_file -format verilog  idex.v
+read_file -format verilog ifid.v
+read_file -format verilog instruction_mem.v
+read_file -format verilog memory.v
+read_file -format verilog memwb.v
+read_file -format verilog MetaDataArray.v
+read_file -format verilog multicycle_memory.v
+read_file -format verilog pc_control.v
+read_file -format verilog PSA_16bit.v
+read_file -format verilog ReadDecoder_4_16.v
+read_file -format verilog reduction.v
+read_file -format verilog register_16b.v
+read_file -format verilog register_8b.v
+read_file -format verilog RegisterFile.v
+read_file -format verilog Register.v
+read_file -format verilog WriteDecoder_4_16.v
+
+
+#######################################
+# Set current Design to top level #
+#######################################
+set current_design cpu
+
+
+#######################################
+#constrain and assign clock
+#######################################
+create_clock -name "clk" -period 2 -waveform {0 1} {clk}
+set_input_delay -clock clk 0.5 prim_inputs
+set_output_delay -clock clk 0.5 [all_outputs]
+set_load 0.1 [all_outputs]
+#######################################
+
+#######################################
+# Constrain input timings and drive #
+#######################################
+set_drive 10 [all_inputs]
+set_max_transition .15 [current_design]
+#set_load .01 [all_outputs]
+set_wire_load_model -name TSMC32K_Lowk_Conservative -library tcbn401pbwptc
+set_max_delay 2.15 [all_outputs]
+
+#######################################
+# Compile design 1 #
+#######################################
+compile -map_effort medium
+#report_area
+report_timing
+
+#######################################
+# Compile design 2 #
+#######################################
+#set_max_delay 2.0 [all_outputs]
+#compile -map_effort medium
+#report_area
+#report_timing
+
+
+#######################################
+# Compile design 3 #
+#######################################
+#set_max_delay 1.85 [all_outputs]
+#compile -map_effort medium
+#report_area 
+#report_timing
+
+
+#######################################
+# Write out netlist
+#######################################
+write -format verilog cpu -output cpu_syn.vg
